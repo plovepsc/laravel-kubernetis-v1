@@ -1,0 +1,48 @@
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: laravel-deployment
+  labels:
+    app: laravel
+spec:
+  selector:
+    matchLabels:
+      app: laravel
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: laravel
+    spec:
+      containers:
+        - name: laravel   # php container with installed laravel app
+          image: webdevloper/saddam-laravel-pos:v1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          env:    # get environment variables from secrets
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: dbName
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: rootPasswordKey
+          ports:
+            - containerPort: 9000
+              name: laravel-9000
+            - containerPort: 8000
+          volumeMounts:
+# mount volume for communication with nginx
+            - name: shared-files
+              mountPath: /var/www/html
+      volumes:
+
+        - name: shared-files
+# volume for communication between nginx and php
+          emptyDir: {}

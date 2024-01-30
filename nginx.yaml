@@ -1,0 +1,31 @@
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx-app
+spec:
+  selector:
+    matchLabels:
+      app: nginx-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-app
+    spec:
+      containers:
+        - name: nginx-app   # php container with installed laravel app
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+          - name: nginx-config-volume # mount volume for nginx config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+      volumes:
+        - name: nginx-config-volume
+# volume for nginx config from configmap
+          configMap:
+            name: nginx-config

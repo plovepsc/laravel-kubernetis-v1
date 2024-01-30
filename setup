@@ -1,0 +1,3 @@
+1. go to mysql database import your db
+2. create laravel nativ password for mysql
+3. go to weapp pod thene env chang
